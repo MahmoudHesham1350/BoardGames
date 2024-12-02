@@ -21,13 +21,11 @@ public:
         return true;
     };
 
-    void virtual display_board() = 0;
+    virtual void display_board() = 0;
 
-    bool virtual is_win() = 0;
-    bool virtual is_draw() = 0;
-    bool virtual is_game_over() {
-        return is_win() || is_draw();
-    };
+    virtual bool is_win() = 0;
+    virtual bool is_draw() = 0;
+    virtual bool is_game_over() = 0;
 
 };
 
@@ -46,11 +44,11 @@ public:
 
     bool virtual getMove(int& row, int& col) = 0;
 
-    char getSymbol() {
+    char getSymbol() const {
         return symbol;
     };
 
-    string getName() {
+    string getName() const {
         return name;
     };
 
