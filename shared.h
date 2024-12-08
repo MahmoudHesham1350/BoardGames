@@ -58,14 +58,18 @@ public:
     }
 
     bool is_win() override {
-        for (int idx = 0; idx < 3; ++idx){
-            if((this->board[idx][0] == this->board[idx][1] && this->board[idx][1] == this->board[idx][2] &&
-                this->board[idx][0] != '_') ||
-               (this->board[0][idx] == this->board[1][idx] && this->board[1][idx] == this->board[2][idx] &&
-                this->board[0][idx] != '_')){
+        for (int i = 0; i < this->rows; i++) {
+            if ((this->board[i][0] == this->board[i][1] && this->board[i][1] == this->board[i][2] && this->board[i][0] != 0) ||
+                (this->board[0][i] == this->board[1][i] && this->board[1][i] == this->board[2][i] && this->board[0][i] != 0)) {
                 return true;
             }
         }
+
+        if ((this->board[0][0] == this->board[1][1] && this->board[1][1] == this->board[2][2] && this->board[0][0] != 0) ||
+            (this->board[0][2] == this->board[1][1] && this->board[1][1] == this->board[2][0] && this->board[0][2] != 0)) {
+            return true;
+        }
+
         return false;
     }
 
@@ -112,8 +116,9 @@ private:
     }
 
     void update_status(){
-        if(currentBoard->is_win()){
+        if(currentBoard->get_winner() != '_'){
             char winner = currentBoard->get_winner();
+            currentBoard->display_board();
             cout << "Winner is: " << winner << endl;
             this->board[currentBoardIdx.first][currentBoardIdx.second] = winner;
             this->n_moves++;
@@ -122,6 +127,7 @@ private:
         }
 
         if (currentBoard->is_draw()){
+            currentBoard->display_board();
             cout << "Draw!" << endl;
             this->biggerBoard = true;
             return;
@@ -144,12 +150,27 @@ private:
     }
 
     bool check_win(int idx){
-        if((this->smallerBoards[idx][0].get_winner() == this->smallerBoards[idx][1].get_winner() && this->smallerBoards[idx][1].get_winner() == this->smallerBoards[idx][2].get_winner() &&
-            this->smallerBoards[idx][0].get_winner() != '_') ||
-           (this->smallerBoards[0][idx].get_winner() == this->smallerBoards[1][idx].get_winner() && this->smallerBoards[1][idx].get_winner() == this->smallerBoards[2][idx].get_winner() &&
-            this->smallerBoards[0][idx].get_winner() != '_')){
+        for (int i = 0; i < this->rows; i++) {
+            if ((this->smallerBoards[idx][0].get_winner() == this->smallerBoards[idx][1].get_winner()
+            && this->smallerBoards[idx][1].get_winner() == this->smallerBoards[idx][2].get_winner()
+            && this->smallerBoards[idx][0].get_winner() != '_') ||
+                (this->smallerBoards[0][idx].get_winner() == this->smallerBoards[1][idx].get_winner()
+                && this->smallerBoards[1][idx].get_winner() == this->smallerBoards[2][idx].get_winner()
+                && this->smallerBoards[0][idx].get_winner() != '_')) {
+                return true;
+            }
+        }
+
+// Check diagonals
+        if ((this->smallerBoards[0][0].get_winner() == this->smallerBoards[1][1].get_winner()
+        && this->smallerBoards[1][1].get_winner() == this->smallerBoards[2][2].get_winner()
+        && this->smallerBoards[0][0].get_winner() != '_') ||
+            (this->smallerBoards[0][2].get_winner() == this->smallerBoards[1][1].get_winner()
+            && this->smallerBoards[1][1].get_winner() == this->smallerBoards[2][0].get_winner()
+            && this->smallerBoards[0][2].get_winner() != '_')) {
             return true;
         }
+
         return false;
     }
 
