@@ -18,6 +18,7 @@ public:
     }
 };
 
+
 template <typename T>
 class SquareXORandomPlayers: public RandomPlayer<T>{
 public:
