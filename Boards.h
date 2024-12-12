@@ -93,21 +93,24 @@ public:
     };
 
     bool game_is_over() override {
-        return n_moves == rows * columns;
+        return is_win() || is_draw();
     }
 
+
     bool is_win() override {
-        if (game_is_over()) {  // if the board is full
+        if (n_moves == rows * columns - 1) {
             pair<int, int> num_wins = get_wins();
-            return num_wins.first > num_wins.second || num_wins.first < num_wins.second;
+            return num_wins.first > num_wins.second;
         }
-        else {
-            return false;
+        if(n_moves == rows * columns){
+            pair<int, int> num_wins = get_wins();
+            return num_wins.first < num_wins.second;
         }
+        return false;
     }
 
     bool is_draw() override {
-        if (game_is_over()) {  // if the board is full
+        if (n_moves == rows * columns -1){
             pair<int, int> num_wins = get_wins();
             return num_wins.first == num_wins.second;
         }
@@ -117,6 +120,9 @@ public:
     }
 
     void display_board() override {
+        if (n_moves == rows * columns){
+            return;
+        }
         for (int row = 0; row < rows; ++row) {
             cout << " | ";
             for (int col = 0; col < columns; ++col) {
@@ -127,6 +133,10 @@ public:
     }
 
     bool update_board(int x, int y, char symbol) override {
+        if (n_moves >= rows * columns - 1){
+            n_moves++;
+            return true;
+        }
         if (x < 0 || x >= rows || y < 0 || y >= columns) {
             return false;
         }
@@ -190,20 +200,20 @@ public:
     }
 
     bool is_win() override {
-            if (check_win()) {
-                if(skipWin){
-                    skipWin = false;
-                    return false;
-                }
-                else {
-                    return true;
-                }
+        if (check_win()) {
+            if(skipWin){
+                skipWin = false;
+                return false;
             }
+            else {
+                return true;
+            }
+        }
         return false;
     }
 
     bool is_draw() override {
-        if (this->n_moves == this->rows * this->columns) {
+        if (this->n_moves == this->rows * this->columns + 1) {
             return true;
         }
         else {

@@ -106,7 +106,7 @@ void GameManager<T>::run() {
             cout << endl;
             boardPtr->display_board();
             if (boardPtr->is_win()) {
-                cout << players[i]->getname() << " wins\n";
+                cout << players[i]->getname() << players[i]->getsymbol() << " wins\n";
                 return;
             }
             if (boardPtr->is_draw()) {
