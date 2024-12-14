@@ -2,13 +2,14 @@
 #include "shared.h"
 #include "Players.h"
 #include <iostream>
+#include "Boards.h"
 
 using namespace std;
 
 int main() {
     int choice;
     Player<char>* players[2];
-    Board<char>* B = new UltimateTicTacToe;
+    Board<char>* B = new WordTicTacToe;
     string playerXName, player2Name;
     char Symbol[2] = {'X', 'O'};
 
@@ -27,7 +28,7 @@ int main() {
                 players[i] = new HumanPlayer<char>(player2Name, Symbol[i], 3);
                 break;
             case 2:
-                players[i] = new SquareXORandomPlayers<char>(Symbol[i], 3);
+                players[i] = new wordsXORandomPlayers<char>(Symbol[i], 3);
                 break;
             default:
                 cout << "Invalid choice for Player " << Symbol[i] << ". Exiting the game.\n";

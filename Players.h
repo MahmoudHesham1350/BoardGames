@@ -34,4 +34,20 @@ public:
     }
 };
 
+template <typename T>
+class wordsXORandomPlayers: public SquareXORandomPlayers<T>{
+public:
+
+    wordsXORandomPlayers (T symbol, int dimension): SquareXORandomPlayers<T>(symbol, dimension) {};
+
+    void getmove(int &x, int &y) override{
+        SquareXORandomPlayers<T>::getmove(x, y);
+        this->symbol = 'A' + rand() % 26;
+    }
+};
+
+
+
+
+
 #endif //BOARDGAMES_PLAYERS_H
