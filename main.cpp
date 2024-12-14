@@ -14,28 +14,6 @@ private:
     int boardType;
     char Symbol[2] = {'X', 'O'};
 
-    void set_players(int playerType, int max_dimension, int i){
-        string playerName;
-        switch(playerType) {
-            case 1:
-                cout << "Enter Player " << Symbol[i] << " name: ";
-                cin >> playerName;
-                players[i] = new HumanPlayer<char>(playerName, Symbol[i], max_dimension);
-                break;
-            case 2:
-                players[i] = new SquareXORandomPlayers<char>(Symbol[i], max_dimension);
-                break;
-            case 3:
-                players[i] = new wordsXOPlayers<char>(playerName, Symbol[i], max_dimension);
-                break;
-            case 4:
-                players[i] = new wordsXORandomPlayers<char>(Symbol[i], max_dimension);
-                break;
-            default:
-                cout << "Invalid choice. Please try again.\n";
-                return take_players();
-        }
-    }
 
     void take_players(){
         for (int i : {0, 1}) {
@@ -46,17 +24,17 @@ private:
             cin >> choice;
 
             switch (this->boardType) {
-                case 1:
-                    set_players(choice, 5, i);
-                    break;
-                case 2:
-                    set_players(choice, 3, i);
-                    break;
-                case 3:
-                    set_players(choice, 3, i);
-                    break;
+
                 case 4:
-                    set_players(choice, 3, i);
+                    if(choice == 1){
+                        cout << "Enter your name: ";
+                        string name;
+                        cin >> name;
+                        players[i] = new wordsXOPlayers<char>(name, Symbol[i], 3);
+                    }
+                    else if(choice == 2){
+                        players[i] = new wordsXORandomPlayers<char>(Symbol[i], 3);
+                    }
                     break;
                 default:
                     cout << "Invalid choice. Please try again.\n";
@@ -83,7 +61,7 @@ private:
             return set_board();
         }
 
-        switch(choice) {
+        switch(boardType) {
             case 1:
                 Board = new TicTacToe5x5();
                 break;

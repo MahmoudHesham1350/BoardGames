@@ -65,6 +65,7 @@ public:
                 cin >> character;
                 character = toupper(character);
                 if (character >= 'A' && character <= 'Z'){
+                    this->symbol = character;
                     break;
                 }
                 else {
