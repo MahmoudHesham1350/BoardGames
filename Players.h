@@ -18,7 +18,6 @@ public:
     }
 };
 
-
 template <typename T>
 class SquareXORandomPlayers: public RandomPlayer<T>{
 public:
@@ -34,5 +33,19 @@ public:
         y = rand() % this->dimension;  // Random number between 0 and dimension - 1
     }
 };
+
+
+template <typename T>
+class wordsXORandomPlayers: public SquareXORandomPlayers<T>{
+public:
+
+    wordsXORandomPlayers (T symbol, int dimension): SquareXORandomPlayers<T>(symbol, dimension) {};
+
+    void getmove(int &x, int &y) override{
+        SquareXORandomPlayers<T>::getmove(x, y);
+        this->symbol = 'A' + rand() % 26;
+    }
+};
+
 
 #endif //BOARDGAMES_PLAYERS_H

@@ -1,6 +1,9 @@
+#include "BoardGame_Classes.h"
+#include "shared.h"
+#include "Players.h"
 #include <iostream>
 #include "Boards.h"
-#include "Players.h"
+
 
 class UserInterface {
 
@@ -67,7 +70,6 @@ public:
         set_board();
         set_game_manager();
         this->gameManger->run();
-
         cout << "Do you want to play again? (y/n): ";
         char playAgain;
         cin >> playAgain;

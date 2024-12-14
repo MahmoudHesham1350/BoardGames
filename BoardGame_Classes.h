@@ -103,10 +103,10 @@ void GameManager<T>::run() {
             while (!boardPtr->update_board(x, y, players[i]->getsymbol())) {
                 players[i]->getmove(x, y);
             }
-            cout << endl;
+          
             boardPtr->display_board();
             if (boardPtr->is_win()) {
-                cout << players[i]->getname() << players[i]->getsymbol() << " wins\n";
+                cout << players[i]->getname() << " wins\n";
                 return;
             }
             if (boardPtr->is_draw()) {
@@ -116,7 +116,6 @@ void GameManager<T>::run() {
         }
     }
 
-}
 
 
 using namespace std;
