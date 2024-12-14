@@ -158,17 +158,21 @@ private:
     bool skipWin = true;
     bool continue_game = true;
 
-    bool check_win(){
+    bool check_win() {
         for (int i = 0; i < this->rows; i++) {
-            if ((this->board[i][0] == this->board[i][1] && this->board[i][1] == this->board[i][2] && this->board[i][0] != '_') ||
-                (this->board[0][i] == this->board[1][i] && this->board[1][i] == this->board[2][i] && this->board[0][i] != '_')) {
+            if ((this->board[i][0] == this->board[i][1] && this->board[i][1] == this->board[i][2] &&
+                 this->board[i][0] != '_') ||
+                (this->board[0][i] == this->board[1][i] && this->board[1][i] == this->board[2][i] &&
+                 this->board[0][i] != '_')) {
                 return true;
             }
         }
 
         // Check diagonals
-        if ((this->board[0][0] == this->board[1][1] && this->board[1][1] == this->board[2][2] && this->board[0][0] != '_') ||
-            (this->board[0][2] == this->board[1][1] && this->board[1][1] == this->board[2][0] && this->board[0][2] != '_')) {
+        if ((this->board[0][0] == this->board[1][1] && this->board[1][1] == this->board[2][2] &&
+             this->board[0][0] != '_') ||
+            (this->board[0][2] == this->board[1][1] && this->board[1][1] == this->board[2][0] &&
+             this->board[0][2] != '_')) {
             return true;
         }
 
@@ -190,12 +194,11 @@ public:
     }
 
     bool game_is_over() override {
-        if (this->is_win() || this->is_draw()){
-            if(continue_game){
+        if (this->is_win() || this->is_draw()) {
+            if (continue_game) {
                 continue_game = false;
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -204,11 +207,10 @@ public:
 
     bool is_win() override {
         if (check_win()) {
-            if(skipWin){
+            if (skipWin) {
                 skipWin = false;
                 return false;
-            }
-            else {
+            } else {
                 return true;
             }
         }
@@ -218,8 +220,7 @@ public:
     bool is_draw() override {
         if (this->n_moves == this->rows * this->columns + 1) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -235,7 +236,7 @@ public:
     }
 
     bool update_board(int x, int y, char symbol) override {
-        if (!skipWin){
+        if (!skipWin) {
             return true;
         }
         if (x < 0 || x >= rows || y < 0 || y >= columns) {
@@ -248,6 +249,7 @@ public:
         }
         return false;
     }
+};
 
 
 // Template function for displaying the board

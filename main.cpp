@@ -11,7 +11,31 @@ private:
     Player<char>* players[2];
     Board<char>* Board;
     GameManager<char>* gameManger;
+    int boardType;
     char Symbol[2] = {'X', 'O'};
+
+    void set_players(int playerType, int max_dimension, int i){
+        string playerName;
+        switch(playerType) {
+            case 1:
+                cout << "Enter Player " << Symbol[i] << " name: ";
+                cin >> playerName;
+                players[i] = new HumanPlayer<char>(playerName, Symbol[i], max_dimension);
+                break;
+            case 2:
+                players[i] = new SquareXORandomPlayers<char>(Symbol[i], max_dimension);
+                break;
+            case 3:
+                players[i] = new wordsXOPlayers<char>(playerName, Symbol[i], max_dimension);
+                break;
+            case 4:
+                players[i] = new wordsXORandomPlayers<char>(Symbol[i], max_dimension);
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+                return take_players();
+        }
+    }
 
     void take_players(){
         for (int i : {0, 1}) {
@@ -21,20 +45,25 @@ private:
             cout << "2. Random Computer\n";
             cin >> choice;
 
-            string playerName;
-            switch(choice) {
+            switch (this->boardType) {
                 case 1:
-                    cout << "Enter Player " << Symbol[i] << " name: ";
-                    cin >> playerName;
-                    players[i] = new HumanPlayer<char>(playerName, Symbol[i], 5);
+                    set_players(choice, 5, i);
                     break;
                 case 2:
-                    players[i] = new SquareXORandomPlayers<char>(Symbol[i], 5);
+                    set_players(choice, 3, i);
+                    break;
+                case 3:
+                    set_players(choice, 3, i);
+                    break;
+                case 4:
+                    set_players(choice, 3, i);
                     break;
                 default:
                     cout << "Invalid choice. Please try again.\n";
                     return take_players();
+
             }
+
         }
 };
 
@@ -43,7 +72,16 @@ private:
         cout << "Choose the game type:\n";
         cout << "1. TicTacToe 5x5\n";
         cout << "2. TicTacToe Inverse\n";
-        cin >> choice;
+        cout << "3. Pyramid TicTacToe\n";
+        cout << "4. Word TicTacToe\n";
+        try{
+            cin >> boardType;
+
+        }
+        catch (exception &e){
+            cout << "Invalid choice. Please try again.\n";
+            return set_board();
+        }
 
         switch(choice) {
             case 1:
@@ -51,6 +89,12 @@ private:
                 break;
             case 2:
                 Board = new TicTacToeInverse();
+                break;
+            case 3:
+                Board = new PyramidTicTacToe();
+                break;
+            case 4:
+                Board = new WordTicTacToe();
                 break;
             default:
                 cout << "Invalid choice. Please try again.\n";
@@ -66,8 +110,8 @@ private:
 
 public:
     UserInterface(){
-        take_players();
         set_board();
+        take_players();
         set_game_manager();
         this->gameManger->run();
         cout << "Do you want to play again? (y/n): ";

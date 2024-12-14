@@ -19,6 +19,7 @@ public:
 };
 
 template <typename T>
+
 class SquareXORandomPlayers: public RandomPlayer<T>{
 public:
 
@@ -35,10 +36,10 @@ public:
 };
 
 
+
 template <typename T>
 class wordsXORandomPlayers: public SquareXORandomPlayers<T>{
 public:
-
     wordsXORandomPlayers (T symbol, int dimension): SquareXORandomPlayers<T>(symbol, dimension) {};
 
     void getmove(int &x, int &y) override{
@@ -46,6 +47,40 @@ public:
         this->symbol = 'A' + rand() % 26;
     }
 };
+
+
+template <typename T>
+class wordsXOPlayers: public HumanPlayer<T>{
+public:
+    wordsXOPlayers (string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {
+
+    }
+
+    void getmove(int &x, int &y) override{
+        HumanPlayer<T>::getmove(x, y);
+        char character;
+        while(true){
+            cout << "Enter a character: ";
+            try {
+                cin >> character;
+                character = toupper(character);
+                if (character >= 'A' && character <= 'Z'){
+                    break;
+                }
+                else {
+                    throw exception();
+                }
+            }
+            catch (exception &e){
+                cout << "Invalid character. Please try again.\n";
+            }
+
+        }
+
+    }
+};
+
+
 
 
 #endif //BOARDGAMES_PLAYERS_H
