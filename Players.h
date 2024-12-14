@@ -34,6 +34,7 @@ public:
     }
 };
 
+
 template <typename T>
 class wordsXORandomPlayers: public SquareXORandomPlayers<T>{
 public:
@@ -45,9 +46,6 @@ public:
         this->symbol = 'A' + rand() % 26;
     }
 };
-
-
-
 
 
 #endif //BOARDGAMES_PLAYERS_H

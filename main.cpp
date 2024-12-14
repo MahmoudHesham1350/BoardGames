@@ -4,59 +4,98 @@
 #include <iostream>
 #include "Boards.h"
 
-using namespace std;
 
-int main() {
-    int choice;
+class UserInterface {
+
+private:
     Player<char>* players[2];
-    Board<char>* B = new WordTicTacToe;
-    string playerXName, player2Name;
+    Board<char>* Board;
+    GameManager<char>* gameManger;
     char Symbol[2] = {'X', 'O'};
 
-    cout << "Welcome to FCAI X-O Game. :)\n";
+    void take_players(){
+        for (int i : {0, 1}) {
+            int choice;
+            cout << "Choose Player " << Symbol[i] << " type:\n";
+            cout << "1. Human\n";
+            cout << "2. Random Computer\n";
+            cin >> choice;
 
-    for (int i : {0, 1}) {
-        cout << "Choose Player " << Symbol[i] << " type:\n";
-        cout << "1. Human\n";
-        cout << "2. Random Computer\n";
+            string playerName;
+            switch(choice) {
+                case 1:
+                    cout << "Enter Player " << Symbol[i] << " name: ";
+                    cin >> playerName;
+                    players[i] = new HumanPlayer<char>(playerName, Symbol[i], 5);
+                    break;
+                case 2:
+                    players[i] = new SquareXORandomPlayers<char>(Symbol[i], 5);
+                    break;
+                default:
+                    cout << "Invalid choice. Please try again.\n";
+                    return take_players();
+            }
+        }
+};
+
+    void set_board(){
+        int choice;
+        cout << "Choose the game type:\n";
+        cout << "1. TicTacToe 5x5\n";
+        cout << "2. TicTacToe Inverse\n";
         cin >> choice;
 
         switch(choice) {
             case 1:
-                cout << "Enter Player " << Symbol[i] << " name: ";
-                cin >> player2Name;
-                players[i] = new HumanPlayer<char>(player2Name, Symbol[i], 3);
+                Board = new TicTacToe5x5();
                 break;
             case 2:
-                players[i] = new wordsXORandomPlayers<char>(Symbol[i], 3);
+                Board = new TicTacToeInverse();
                 break;
             default:
-                cout << "Invalid choice for Player " << Symbol[i] << ". Exiting the game.\n";
-                return 1;
+                cout << "Invalid choice. Please try again.\n";
+                return set_board();
         }
     }
 
-    // Create the game manager and run the game
-    GameManager<char> game(B, players);
-    game.run();
-
-    // Clean up
-    delete B;
-    for (int i = 0; i < 2; ++i) {
-        delete players[i];
+    void set_game_manager(){
+        gameManger = new GameManager<char>(Board, players);
     }
 
-    while (true){
+
+
+public:
+    UserInterface(){
+        take_players();
+        set_board();
+        set_game_manager();
+        this->gameManger->run();
         cout << "Do you want to play again? (y/n): ";
         char playAgain;
         cin >> playAgain;
         if (playAgain == 'y'){
-            main();
+            UserInterface();
+        }
+        else if(playAgain == 'n'){
+            cout << "Thank you for playing. Goodbye!\n";
         }
         else {
-            cout << "Thank you for playing. Goodbye!\n";
-            break;
+            cout << "Invalid choice.\n";
         }
     }
+
+    ~UserInterface(){
+        delete Board;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete gameManger;
+    }
+};
+
+int main() {
+    UserInterface();
+
+
     return 0;
 }
