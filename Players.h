@@ -1,7 +1,9 @@
 #ifndef BOARDGAMES_PLAYERS_H
 #define BOARDGAMES_PLAYERS_H
 
+#include <limits>
 #include "BoardGame_Classes.h"
+
 
 template <typename T>
 class HumanPlayer : public Player<T> {
@@ -13,19 +15,19 @@ public:
     };
 
     void getmove(int &x, int &y) {
-        cout << "Enter your move from 0 to " << dimension - 1 << " (x y): ";
+        cout << "Enter your move 2D zero indexed" << endl;
         cin >> x >> y;
     }
 };
 
-template <typename T>
 
+template <typename T>
 class SquareXORandomPlayers: public RandomPlayer<T>{
 public:
 
     SquareXORandomPlayers (T symbol, int dimension): RandomPlayer<T>(symbol){
         this->dimension = dimension;
-        this->name = "Random Computer Player";
+        this->name = "Random Computer Player " + std::string(1, symbol);
         srand(static_cast<unsigned int>(time(0)));
     };
 
@@ -34,7 +36,6 @@ public:
         y = rand() % this->dimension;  // Random number between 0 and dimension - 1
     }
 };
-
 
 
 template <typename T>
@@ -52,34 +53,56 @@ public:
 template <typename T>
 class wordsXOPlayers: public HumanPlayer<T>{
 public:
-    wordsXOPlayers (string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {
-
-    }
+    wordsXOPlayers (std::string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {}
 
     void getmove(int &x, int &y) override{
         HumanPlayer<T>::getmove(x, y);
         char character;
         while(true){
-            cout << "Enter a character: ";
-            try {
-                cin >> character;
-                character = toupper(character);
-                if (character >= 'A' && character <= 'Z'){
-                    this->symbol = character;
-                    break;
-                }
-                else {
-                    throw exception();
-                }
-            }
-            catch (exception &e){
-                cout << "Invalid character. Please try again.\n";
-            }
+            cout << "Enter a character: " << endl;
+            cin >> character;
+            character = toupper(character);
 
+            if (cin.fail() || character < 'A' || character > 'Z'){
+                cin.clear(); // clear the error flag
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
+                cout << "Invalid character." << endl;
+            }
+            else {
+                this->symbol = character;
+                break;
+            }
         }
-
     }
 };
+
+
+template <typename T>
+class NumbersXOPlayers: public HumanPlayer<T>{
+public:
+    NumbersXOPlayers (std::string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {}
+
+    void getmove(int &x, int &y) override{
+        HumanPlayer<T>::getmove(x, y);
+        int character;
+        while(true){
+            cout << "Enter a Number between (1 and 9): " << endl;
+            cin >> character;
+
+
+            if (cin.fail() || character < 'A' || character > 'Z'){
+                cin.clear(); // clear the error flag
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
+                cout << "Invalid character." << endl;
+            }
+            else {
+                this->symbol = character;
+                break;
+            }
+        }
+    }
+};
+
 
 
 

@@ -257,4 +257,69 @@ public:
 
 };
 
+
+class SusTicTacToe : public Board<char> {
+private:
+    // Check if a move is valid
+    bool is_valid_move(int row, int col) {
+        return row >= 0 && row < rows && col >= 0 && col < columns && board[row][col] == '\0';
+    }
+
+public:
+    SusTicTacToe() {
+        rows = 3;
+        columns = 3;
+        n_moves = 0;
+        board = new char*[rows];
+        for (int i = 0; i < rows; ++i) {
+            board[i] = new char[columns]();
+            for (int j = 0; j < columns; ++j) {
+                board[i][j] = '\0';
+            }
+        }
+    }
+
+    void display_board() override {
+        for (int row = 0; row < rows; ++row) {
+            for (int col = 0; col < columns; ++col) {
+                cout << (board[col][row] == '\0' ? '.' : board[col][row]) << " ";
+            }
+            cout << endl;
+        }
+    }
+
+    bool update_board(int row, int col, char symbol) override {
+        if (is_valid_move(row, col)) {
+            board[row][col] = symbol;
+            n_moves++;
+            return true;
+        }
+        return false;
+    }
+
+    bool is_win() override {
+        // Check rows and columns
+        for (int i = 0; i < rows; ++i) {
+            if (board[i][0] == 'S' && board[i][1] == 'U' && board[i][2] == 'S') return true;
+            if (board[0][i] == 'S' && board[1][i] == 'U' && board[2][i] == 'S') return true;
+        }
+
+        // Check diagonals
+        if (board[0][0] == 'S' && board[1][1] == 'U' && board[2][2] == 'S') return true;
+        if (board[0][2] == 'S' && board[1][1] == 'U' && board[2][0] == 'S') return true;
+
+        return false;
+    }
+
+    bool is_draw() override {
+        return n_moves == rows * columns;
+    }
+
+    bool game_is_over() override {
+        return is_win() || is_draw();
+    }
+
+};
+
+
 #endif //BOARDGAMES_SHARED_H

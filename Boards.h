@@ -99,15 +99,14 @@ public:
         return is_win() || is_draw();
     }
 
-
     bool is_win() override {
         if (n_moves == rows * columns - 1) {
             pair<int, int> num_wins = get_wins();
-            return num_wins.first > num_wins.second;
+            return num_wins.first < num_wins.second;
         }
         if(n_moves == rows * columns){
             pair<int, int> num_wins = get_wins();
-            return num_wins.first < num_wins.second;
+            return num_wins.first > num_wins.second;
         }
         return false;
     }
@@ -133,6 +132,7 @@ public:
             }
             cout << endl;
         }
+        cout << endl;
     }
 
     bool update_board(int x, int y, char symbol) override {
@@ -152,6 +152,7 @@ public:
     }
 
 };
+
 
 class TicTacToeInverse : public Board<char> {
 private:
@@ -252,7 +253,6 @@ public:
 };
 
 
-// Template function for displaying the board
 class PyramidTicTacToe: public Board<char> {
 private:
     int last_row = -1, last_col = -1;
@@ -472,6 +472,7 @@ public:
 
 
 };
+
 
 
 #endif //BOARDGAMES_BOARDS_H
