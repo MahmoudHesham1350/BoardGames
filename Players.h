@@ -2,6 +2,7 @@
 #define BOARDGAMES_PLAYERS_H
 
 #include <limits>
+#include <algorithm>
 #include "BoardGame_Classes.h"
 
 
@@ -79,31 +80,69 @@ public:
 
 template <typename T>
 class NumbersXOPlayers: public HumanPlayer<T>{
+private:
+    vector<char> numbers;
 public:
-    NumbersXOPlayers (std::string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {}
+    NumbersXOPlayers (std::string name, T symbol, int dimension): HumanPlayer<T>(name, symbol, dimension) {
+        if (symbol == 'X'){
+            numbers = {'1', '3', '5', '7', '9'};
+        }
+        else {
+            numbers = {'2', '4', '6', '8'};
+        }
+    }
 
-    void getmove(int &x, int &y) override{
+    void getmove(int &x, int &y) override {
         HumanPlayer<T>::getmove(x, y);
-        int character;
+        char number;
         while(true){
-            cout << "Enter a Number between (1 and 9): " << endl;
-            cin >> character;
+            cout << "Enter a Number from {";
+            for (int i = 0; i < numbers.size(); ++i) {
+                cout << numbers[i] << (i == numbers.size() - 1 ? "" : ", ");
+            }
+            cout << "}" << endl;
+            cin >> number;
 
 
-            if (cin.fail() || character < 'A' || character > 'Z'){
-                cin.clear(); // clear the error flag
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
+            if (cin.fail() ){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "Invalid character." << endl;
+                continue;
+            }
+
+            if (find(numbers.begin(), numbers.end(), number) == numbers.end()){
+                cout << "Invalid number." << endl;
             }
             else {
-                this->symbol = character;
+                this->symbol = number;
+                numbers.erase(std::remove(numbers.begin(), numbers.end(), number), numbers.end());
                 break;
             }
+
         }
     }
 };
 
+template <typename T>
+class NumbersXORandomPlayers: public SquareXORandomPlayers<T>{
+private:
+    vector<char> numbers;
+public:
+    NumbersXORandomPlayers(T symbol, int dimension): SquareXORandomPlayers<T>(symbol, dimension) {
+        if (symbol == 'X'){
+            numbers = {'1', '3', '5', '7', '9'};
+        }
+        else {
+            numbers = {'2', '4', '6', '8'};
+        }
+    };
 
+    void getmove(int &x, int &y) override{
+        SquareXORandomPlayers<T>::getmove(x, y);
+        this->symbol = numbers[rand() % numbers.size()];
+    }
+};
 
 
 

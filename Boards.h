@@ -234,6 +234,7 @@ public:
             }
             cout << endl;
         }
+        cout << endl;
     }
 
     bool update_board(int x, int y, char symbol) override {
@@ -351,25 +352,24 @@ public:
 class WordTicTacToe : public Board<char> {
 private:
     unordered_set<string> dictionary; // Set to store valid words
-    int last_row = -1, last_col = -1;
+    string currentWord;
 
     // Check if the given word exists in the dictionary
-    bool isWordValid(const string &word) {
-        return dictionary.find(word) != dictionary.end();
+    bool isWordValid() {
+        return dictionary.find(currentWord) != dictionary.end();
     }
 
     // Recursive function to form words in a specified direction
-    bool formWord(int row, int col, int dx, int dy, string &currentWord) {
+    void formWord(int row, int col, int dx, int dy) {
         // If out of bounds or the cell is empty, stop
         if (row < 0 || col < 0 || row >= 3 || col >= 3 || this->board[row][col] == '\0') {
-            return false;
+            return;
         }
-
-        // Append the current letter to the word
-        currentWord += board[row][col];
-
-        // If the word is valid, return true
-        return isWordValid(currentWord);
+        else {
+            // Append the current letter to the word
+            currentWord += board[row][col];
+            formWord(row + dx, col + dy, dx, dy);
+        }
     }
 
 public:
@@ -407,50 +407,81 @@ public:
 
         string word;
         while (file >> word) {
+            transform(word.begin(), word.end(), word.begin(), [](char c) {
+                return toupper(c);
+            });
+
             dictionary.insert(word);
         }
     }
 
     // Place a letter on the board and check if it forms a valid word
     bool update_board(int row, int col, char letter) override {
-        if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != '\0') {
+        if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[col][row] != '\0') {
             return false;
         }
         else {
-            last_row = row;
-            last_col = col;
-            board[row][col] = letter;
+            board[col][row] = letter;
             return true;
         }
 
     }
 
+
     // Check if the current move forms a valid word in any direction
     bool is_win() override {
-        if (last_row == - 1 || last_col == -1){
-            return false;
+        // Check horizontally
+        for (int i = 0; i < rows; ++i) {
+            formWord(i, 0, 0, 1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
         }
-        else{
-            string word = "";
 
-            // Check horizontally
-            if (formWord(last_row, 0, 0, 1, word)) return true;
-            word.clear();
-
-            // Check vertically
-            if (formWord(0, last_col, 1, 0, word)) return true;
-            word.clear();
-
-            // Check diagonally (top-left to bottom-right)
-            if (last_row == last_col && formWord(0, 0, 1, 1, word)) return true;
-            word.clear();
-
-            // Check diagonally (top-right to bottom-left)
-            if (last_row + last_col == 2 && formWord(0, 2, 1, -1, word)) return true;
-
-            return false;
-
+        // Check in reverse horizontally
+        for (int i = 0; i < rows; ++i) {
+            formWord(i, 2, 0, -1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
         }
+
+        // Check vertically
+        for (int i = 0; i < columns; ++i) {
+            formWord(0, i, 1, 0);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+        }
+
+        // Check in reverse vertically
+        for (int i = 0; i < columns; ++i) {
+            formWord(2, i, -1, 0);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+        }
+
+        // Check diagonally (top-left to bottom-right)
+            formWord(0, 0, 1, 1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+
+        // Check diagonally (top-right to bottom-left)
+            formWord(0, 2, 1, -1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+
+        // Check diagonally (bottom-right to top-left)
+            formWord(2, 2, -1, -1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+
+        // Check diagonally (bottom-left to top-right)
+            formWord(2, 0, -1, 1);
+            if (isWordValid()) return true;
+            this->currentWord.clear();
+
+        return false;
+
+
+
 
 
     }
@@ -474,5 +505,91 @@ public:
 };
 
 
+class NumbersOX : public Board<char> {
+
+public:
+
+    NumbersOX() {
+        rows = 3;
+        columns = 3;
+        n_moves = 0;
+        board = new char *[rows];
+        for (int i = 0; i < rows; ++i) {
+            board[i] = new char[columns]();
+            for (int j = 0; j < columns; ++j) {
+                board[i][j] = '0';
+            }
+        }
+    }
+
+    void display_board() override {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (board[j][i] == '0') {
+                    cout << " . ";
+                } else {
+                    cout << " " << board[j][i] << " ";
+                }
+            }
+            cout << "\n";
+        }
+        cout << "\n";
+    }
+
+    bool update_board(int x, int y, char number) override {
+        if (x < 0 || x >= rows || y < 0 || y >= columns || board[x][y] != '0') {
+            return false;
+        }
+        if (number < '1' || number > '9') {
+            return false;
+        }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == number) {
+                    return false;
+                }
+            }
+        }
+        board[x][y] = number;
+        n_moves++;
+        return true;
+    }
+
+    // Function to check if there's a winner
+bool is_win() override {
+    // Check rows and columns
+    for (int i = 0; i < rows; i++) {
+        if (board[i][0] - '0' + board[i][1] - '0' + board[i][2] - '0' == 15 &&
+            board[i][0] != '0' && board[i][1] != '0' && board[i][2] != '0') {
+            return true;
+        }
+        if (board[0][i] - '0' + board[1][i] - '0' + board[2][i] - '0' == 15 &&
+            board[0][i] != '0' && board[1][i] != '0' && board[2][i] != '0') {
+            return true;
+        }
+    }
+
+    // Check diagonals
+    if (board[0][0] - '0' + board[1][1] - '0' + board[2][2] - '0' == 15 &&
+        board[0][0] != '0' && board[1][1] != '0' && board[2][2] != '0') {
+        return true;
+    }
+    if (board[0][2] - '0' + board[1][1] - '0' + board[2][0] - '0' == 15 &&
+        board[0][2] != '0' && board[1][1] != '0' && board[2][0] != '0') {
+        return true;
+    }
+
+    return false;
+}
+
+    bool is_draw() override {
+        return n_moves == rows * columns;
+    }
+
+    bool game_is_over() override {
+        return is_win() || is_draw();
+    }
+
+};
 
 #endif //BOARDGAMES_BOARDS_H

@@ -29,19 +29,42 @@ private:
                     cout << "Enter your name: ";
                     string name;
                     cin >> name;
-                    if (this->boardType == 4){
-                        players[i] = new wordsXOPlayers<char>(name, Symbol[i], board_max_size);
-                    }
-                    else {
-                        players[i] = new HumanPlayer<char>(name, Symbol[i], board_max_size);
+                    switch (boardType) {
+                        case 4:
+                        {
+                            players[i] = new wordsXOPlayers<char>(name, Symbol[i], board_max_size);
+                            break;
+                        }
+                        case 5:
+                        {
+                            players[i] = new NumbersXOPlayers<char>(name, Symbol[i], board_max_size);
+                            break;
+                        }
+                        default:
+                        {
+                            players[i] = new HumanPlayer<char>(name, Symbol[i], board_max_size);
+                            break;
+                        }
+
                     }
                 }
                 else if(choice == 2){
-                    if (this->boardType == 4){
-                        players[i] = new wordsXORandomPlayers<char>(Symbol[i], board_max_size);
-                    }
-                    else {
-                        players[i] = new SquareXORandomPlayers<char>(Symbol[i], board_max_size);
+                    switch (boardType) {
+                        case 4:
+                        {
+                            players[i] = new wordsXORandomPlayers<char>(Symbol[i], board_max_size);
+                            break;
+                        }
+                        case 5:
+                        {
+                            players[i] = new NumbersXORandomPlayers<char>(Symbol[i], board_max_size);
+                            break;
+                        }
+                        default:
+                        {
+                            players[i] = new SquareXORandomPlayers<char>(Symbol[i], board_max_size);
+                            break;
+                        }
                     }
                 }
                 else {
@@ -63,6 +86,7 @@ private:
         cout << "2. TicTacToe Inverse\n";
         cout << "3. Pyramid TicTacToe\n";
         cout << "4. Word TicTacToe\n";
+        cout << "5. NumbersOX\n";
         cout << "8. Sus TicTacToe\n";
         cout << "9. Ultimate TicTacToe\n";
 
@@ -97,6 +121,12 @@ private:
             case 4:
             {
                 Board = new WordTicTacToe();
+                board_max_size = 3;
+                break;
+            }
+            case 5:
+            {
+                Board = new NumbersOX();
                 board_max_size = 3;
                 break;
             }
