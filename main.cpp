@@ -106,6 +106,8 @@ private:
 
         Symbol[0] = 'X';
         Symbol[1] = 'O';
+
+
         switch(boardType) {
             case 1:
             {
@@ -147,7 +149,7 @@ private:
             }
             case 8: {
                 Board = new UltimateTicTacToe();
-                board_max_size = 3;
+                board_max_size = 9;
                 break;
             }
             default:

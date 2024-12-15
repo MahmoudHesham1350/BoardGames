@@ -6,7 +6,12 @@ class XO3x3 : public Board<char> {
 private:
     char winner = '_';
 
-    void init_board() {
+public:
+
+    XO3x3() {
+        this->rows = 3;
+        this->columns = 3;
+        this->n_moves = 0;
         this->board = new char*[this->rows];
         for (int i = 0; i < this->rows; ++i) {
             this->board[i] = new char[this->columns]();
@@ -14,22 +19,6 @@ private:
                 this->board[i][j] = '_';
             }
         }
-    }
-
-    void delete_board() {
-        for (int i = 0; i < this->rows; ++i) {
-            delete[] this->board[i];
-        }
-        delete[] this->board;
-    }
-
-public:
-
-    XO3x3() {
-        this->rows = 3;
-        this->columns = 3;
-        this->n_moves = 0;
-        init_board();
     }
 
     bool update_board(int x, int y, char symbol) override {
@@ -47,15 +36,21 @@ public:
         return false;
     }
 
+    void display_board(int row)  {
+            cout << "|";
+            for (int col = 0; col < this->columns; ++col) {
+                cout << this->board[col][row] << "|";
+            }
+            cout << "   ";
+    }
+
     void display_board() override {
         for (int row = 0; row < this->rows; ++row) {
-            cout << " | ";
-            for (int col = 0; col < this->columns; ++col) {
-                cout << this->board[col][row] << " | ";
-            }
+            display_board(row);
             cout << endl;
         }
     }
+
 
     bool is_win() override {
         for (int i = 0; i < this->rows; i++) {
@@ -75,9 +70,6 @@ public:
 
     bool is_draw() override {
         if (this->n_moves == this->rows * this->columns){
-            delete_board();
-            init_board();
-            this->n_moves = 0;
             return true;
         }
         else {
@@ -98,7 +90,6 @@ public:
 
 class UltimateTicTacToe : public Board<char> {
 private:
-    bool biggerBoard = true;
     XO3x3* currentBoard;
     pair<int, int> currentBoardIdx;
     XO3x3** smallerBoards = new XO3x3*[3];
@@ -107,45 +98,10 @@ private:
         if(this->smallerBoards[x][y].get_winner() == '_') {
             currentBoardIdx = make_pair(x, y);
             currentBoard = &this->smallerBoards[x][y];
-            this->biggerBoard = false;
             return true;
         }
         else {
             return false;
-        }
-    }
-
-    void update_status(){
-        if(currentBoard->get_winner() != '_'){
-            char winner = currentBoard->get_winner();
-            currentBoard->display_board();
-            cout << "Winner is: " << winner << endl;
-            this->board[currentBoardIdx.first][currentBoardIdx.second] = winner;
-            this->n_moves++;
-            this->biggerBoard = true;
-            return;
-        }
-
-        if (currentBoard->is_draw()){
-            currentBoard->display_board();
-            cout << "Draw!" << endl;
-            this->biggerBoard = true;
-            return;
-        }
-
-    };
-
-    void print_smaller_board() const {
-        currentBoard->display_board();
-    }
-
-    void print_ultimate_board() const {
-        for (int row = 0; row < this->rows; ++row) {
-            cout << " | ";
-            for (int col = 0; col < this->columns; ++col) {
-                cout << this->smallerBoards[col][row].get_winner() << " | ";
-            }
-            cout << endl;
         }
     }
 
@@ -161,7 +117,6 @@ private:
             }
         }
 
-// Check diagonals
         if ((this->smallerBoards[0][0].get_winner() == this->smallerBoards[1][1].get_winner()
         && this->smallerBoards[1][1].get_winner() == this->smallerBoards[2][2].get_winner()
         && this->smallerBoards[0][0].get_winner() != '_') ||
@@ -174,11 +129,22 @@ private:
         return false;
     }
 
+    void display_ultimate(){
+        cout << endl << "Ultimate Tic Tac Toe" << endl;
+        for(int i = 0; i < 3; i++){
+            cout << " | ";
+            for(int j = 0; j < 3; j++){
+                cout << this->smallerBoards[i][j].get_winner() << " | ";
+            }
+            cout << endl;
+        }
+    }
+
 
 public:
     UltimateTicTacToe(){
-        this->rows = 3;
-        this->columns = 3;
+        this->rows = 9;
+        this->columns = 9;
         this->n_moves = 0;
         this->currentBoard = nullptr;
         this->board = new char*[this->rows];
@@ -203,43 +169,44 @@ public:
         delete[] this->smallerBoards;
     };
 
-
-
     bool update_board(int x, int y, char symbol) override {
         if (x < 0 || x >= this->rows || y < 0 || y >= this->columns) {
             return false;
         }
+        int outer_x = y / 3;
+        int outer_y = x / 3;
+        int inner_x = y % 3;
+        int inner_y = x % 3;
 
-        if (this->biggerBoard){
-            return choose_board(x, y);
+
+        if (this->smallerBoards[outer_x][outer_y].get_winner() != '_') {
+            return false;
         }
         else {
-            bool success = currentBoard->update_board(x, y, symbol);
-            if(success){
-                update_status();
-            }
-            return success;
+            choose_board(outer_x, outer_y);
+            return this->currentBoard->update_board(inner_x, inner_y, symbol);
         }
 
-    };
-
-
-    void display_board() override {
-        if(this->biggerBoard){
-            cout << "Ultimate Tic Tac Toe Board: " << endl;
-            print_ultimate_board();
-        }
-        else {
-            cout << "Current Board (" << currentBoardIdx.first << "," << currentBoardIdx.second << "): " << endl;
-            print_smaller_board();
-        }
-        cout << endl;
     }
 
+    void display_board() override {
+        for (int i = 0; i < 3; i++) {
+            for (int k = 0; k < 3; k++) {
+                for (int j = 0; j < 3; j++) {
+                    this->smallerBoards[i][j].display_board(k);
+                }
+                cout << endl;
+            }
+            cout << endl;
+        }
+        cout << "---------------------------" << endl;
+
+    }
 
     bool is_win() override {
         for (int idx = 0; idx < 3; idx++){
             if(check_win(idx)){
+                display_ultimate();
                 return true;
             }
         }
@@ -247,7 +214,14 @@ public:
     }
 
     bool is_draw() override {
-        return this->n_moves == this->rows * this->columns;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(smallerBoards[i][j].get_winner() == '_' && !smallerBoards[i][j].is_draw()){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     bool game_is_over() override {
