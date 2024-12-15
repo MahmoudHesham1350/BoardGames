@@ -9,12 +9,12 @@
 class UserInterface {
 
 private:
+    GameManager<char>* gameManger;
     Player<char>* players[2];
     Board<char>* Board;
+    char Symbol[2];
     int board_max_size = 0;
-    GameManager<char>* gameManger;
     int boardType = 0;
-    char Symbol[2] = {'X', 'O'};
 
 
     void take_players(){
@@ -25,80 +25,87 @@ private:
             cout << "2. Random Computer\n";
             cin >> choice;
 
-                if(choice == 1){
-                    cout << "Enter your name: ";
-                    string name;
-                    cin >> name;
-                    switch (boardType) {
-                        case 4:
-                        {
-                            players[i] = new wordsXOPlayers<char>(name, Symbol[i], board_max_size);
-                            break;
-                        }
-                        case 5:
-                        {
-                            players[i] = new NumbersXOPlayers<char>(name, Symbol[i], board_max_size);
-                            break;
-                        }
-                        default:
-                        {
-                            players[i] = new HumanPlayer<char>(name, Symbol[i], board_max_size);
-                            break;
-                        }
+            if (cin.fail()) {
+                cin.clear(); // clear the error flag
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
+                cerr << "Invalid choice." << endl;
+                cerr.clear();
+                return take_players();
+            }
 
+            if(choice == 1){
+                cout << "Enter your name: ";
+                string name;
+                cin >> name;
+                switch (boardType) {
+                    case 4:
+                    {
+                        players[i] = new wordsXOPlayers<char>(name, Symbol[i], board_max_size);
+                        break;
+                    }
+                    case 5:
+                    {
+                        players[i] = new NumbersXOPlayers<char>(name, Symbol[i], board_max_size);
+                        break;
+                    }
+                    default:
+                    {
+                        players[i] = new HumanPlayer<char>(name, Symbol[i], board_max_size);
+                        break;
+                    }
+
+                }
+            }
+            else if(choice == 2){
+                switch (boardType) {
+                    case 4:
+                    {
+                        players[i] = new wordsXORandomPlayers<char>(Symbol[i], board_max_size);
+                        break;
+                    }
+                    case 5:
+                    {
+                        players[i] = new NumbersXORandomPlayers<char>(Symbol[i], board_max_size);
+                        break;
+                    }
+                    default:
+                    {
+                        players[i] = new SquareXORandomPlayers<char>(Symbol[i], board_max_size);
+                        break;
                     }
                 }
-                else if(choice == 2){
-                    switch (boardType) {
-                        case 4:
-                        {
-                            players[i] = new wordsXORandomPlayers<char>(Symbol[i], board_max_size);
-                            break;
-                        }
-                        case 5:
-                        {
-                            players[i] = new NumbersXORandomPlayers<char>(Symbol[i], board_max_size);
-                            break;
-                        }
-                        default:
-                        {
-                            players[i] = new SquareXORandomPlayers<char>(Symbol[i], board_max_size);
-                            break;
-                        }
-                    }
-                }
-                else {
-                    cout << "Invalid choice." << endl;
-                    return take_players();
-                }
-
-
-
-
+            }
+            else {
+                cerr << "Invalid choice." << endl;
+                cerr.clear();
+                return take_players();
+            }
 
         }
     }
 
     void set_board(){
-        int choice;
+        cout << "Welcome to TicTacToe World!\n";
         cout << "Choose the game type:\n";
         cout << "1. TicTacToe 5x5\n";
         cout << "2. TicTacToe Inverse\n";
         cout << "3. Pyramid TicTacToe\n";
         cout << "4. Word TicTacToe\n";
         cout << "5. NumbersOX\n";
-        cout << "8. Sus TicTacToe\n";
-        cout << "9. Ultimate TicTacToe\n";
-
+        cout << "7. SUS TicTacToe\n";
+        cout << "8. Ultimate TicTacToe\n";
         cin >> boardType;
 
         if (cin.fail()) {
             cin.clear(); // clear the error flag
             cin.ignore(numeric_limits<streamsize>::max(), '\n'); // discard invalid input
             cerr << "Invalid choice." << endl;
+            cerr.clear();
             return set_board();
         }
 
+        Symbol[0] = 'X';
+        Symbol[1] = 'O';
         switch(boardType) {
             case 1:
             {
@@ -130,7 +137,7 @@ private:
                 board_max_size = 3;
                 break;
             }
-            case 8:
+            case 7:
             {
                 Board = new SusTicTacToe();
                 board_max_size = 3;
@@ -138,14 +145,15 @@ private:
                 Symbol[1] = 'U';
                 break;
             }
-            case 9: {
+            case 8: {
                 Board = new UltimateTicTacToe();
                 board_max_size = 3;
                 break;
             }
             default:
             {
-                cout << "Invalid choice." << endl;
+                cerr << "Invalid choice." << endl;
+                cerr.clear();
                 return set_board();
             }
         }
@@ -162,21 +170,34 @@ public:
         set_board();
         take_players();
         set_game_manager();
-        this->gameManger->run();
-        cout << "Do you want to play again? (y/n):";
-        cin.clear();
-        cout.flush();
-        char playAgain;
-        cin >> playAgain;
-        if (playAgain == 'y'){
-            UserInterface();
+
+    }
+
+
+
+    void run_game(){
+        while (true){
+            this->gameManger->run();
+            cout << "Do you want to play again? (y/n):";
+            cin.clear();
+            cout.flush();
+            char playAgain;
+            cin >> playAgain;
+            if (playAgain == 'y'){
+                set_board();
+                take_players();
+                set_game_manager();
+            }
+            else if(playAgain == 'n'){
+                cout << "\nThank you for playing. Goodbye!\n";
+                break;
+            }
+            else {
+                cout << "Invalid choice.\n";
+                exit(1);
+            }
         }
-        else if(playAgain == 'n'){
-            cout << "\nThank you for playing. Goodbye!\n";
-        }
-        else {
-            cout << "Invalid choice.\n";
-        }
+
     }
 
     ~UserInterface(){
@@ -189,7 +210,9 @@ public:
 };
 
 int main() {
-    UserInterface();
+    UserInterface userInterface;
+    userInterface.run_game();
+
 
 
     return 0;
