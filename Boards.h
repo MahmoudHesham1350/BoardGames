@@ -219,7 +219,7 @@ public:
     }
 
     bool is_draw() override {
-        if (this->n_moves == this->rows * this->columns + 1) {
+        if (this->n_moves == this->rows * this->columns && !check_win()) {
             return true;
         } else {
             return false;
@@ -227,6 +227,9 @@ public:
     }
 
     void display_board() override {
+        if (!skipWin) {
+            return;
+        }
         for (int row = 0; row < rows; ++row) {
             cout << " | ";
             for (int col = 0; col < columns; ++col) {
