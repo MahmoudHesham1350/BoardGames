@@ -556,7 +556,7 @@ public:
     }
 
     // Function to check if there's a winner
-bool is_win() override {
+    bool is_win() override {
     // Check rows and columns
     for (int i = 0; i < rows; i++) {
         if (board[i][0] - '0' + board[i][1] - '0' + board[i][2] - '0' == 15 &&
@@ -590,6 +590,104 @@ bool is_win() override {
         return is_win() || is_draw();
     }
 
+};
+
+// Board implementation for Four-in-a-Row
+class FourInARowBoard : public Board<char> {
+public:
+    FourInARowBoard(int r = 6, int c = 7) {
+        rows = r;
+        columns = c;
+        board = new char*[rows];
+        for (int i = 0; i < rows; ++i) {
+            board[i] = new char[columns];
+            fill(board[i], board[i] + columns, '.'); // Initialize empty grid
+        }
+    }
+
+    // Update the board with the player's move
+    bool update_board(int x, int y, char symbol) override {
+        if (y < 0 || y >= columns || board[0][y] != '.') return false;
+
+        for (int i = rows - 1; i >= 0; --i) {
+            if (board[i][y] == '.') {
+                board[i][y] = symbol;
+                n_moves++;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Display the current state of the board
+    void display_board() override {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                cout << board[i][j] << " ";
+            }
+            cout << endl;
+        }
+        for (int j = 0; j < columns; ++j) cout << j << " "; // Column numbers
+        cout << "\n\n";
+    }
+
+    // Check for a winner
+    bool is_win() override {
+        return check_horizontal() || check_vertical() || check_diagonal();
+    }
+
+    // Check if all moves are done (draw)
+    bool is_draw() override {
+        return n_moves == rows * columns && !is_win();
+    }
+
+    // Check if the game is over
+    bool game_is_over() override {
+        return is_win() || is_draw();
+    }
+
+private:
+    bool check_horizontal() {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j <= columns - 4; ++j) {
+                if (board[i][j] != '.' && board[i][j] == board[i][j + 1] &&
+                    board[i][j] == board[i][j + 2] && board[i][j] == board[i][j + 3])
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    bool check_vertical() {
+        for (int i = 0; i <= rows - 4; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                if (board[i][j] != '.' && board[i][j] == board[i + 1][j] &&
+                    board[i][j] == board[i + 2][j] && board[i][j] == board[i + 3][j])
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    bool check_diagonal() {
+        // Check for diagonals (\ direction)
+        for (int i = 0; i <= rows - 4; ++i) {
+            for (int j = 0; j <= columns - 4; ++j) {
+                if (board[i][j] != '.' && board[i][j] == board[i + 1][j + 1] &&
+                    board[i][j] == board[i + 2][j + 2] && board[i][j] == board[i + 3][j + 3])
+                    return true;
+            }
+        }
+        // Check for diagonals (/ direction)
+        for (int i = 0; i <= rows - 4; ++i) {
+            for (int j = 3; j < columns; ++j) {
+                if (board[i][j] != '.' && board[i][j] == board[i + 1][j - 1] &&
+                    board[i][j] == board[i + 2][j - 2] && board[i][j] == board[i + 3][j - 3])
+                    return true;
+            }
+        }
+        return false;
+    }
 };
 
 #endif //BOARDGAMES_BOARDS_H

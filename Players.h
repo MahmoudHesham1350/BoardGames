@@ -144,6 +144,29 @@ public:
     }
 };
 
+// Human player class
+class FourInARowPlayer : public Player<char> {
+public:
+    FourInARowPlayer(string n, char symbol) : Player<char>(n, symbol) {}
+
+    void getmove(int& x, int& y) override {
+        cout << name << " (" << symbol << "), enter column (0-6): ";
+        cin >> y;
+        x = 0; // X is not relevant for column-based updates
+    }
+};
+
+// Human player class
+class FourInARowRandomPlayer : public RandomPlayer<char> {
+public:
+    FourInARowRandomPlayer(char symbol, int dimension) : RandomPlayer<char>(symbol) {}
+
+    void getmove(int& x, int& y) override {
+        x = 0; // X is not relevant for column-based updates
+        y = rand() % dimension;
+    }
+};
+
 
 
 #endif //BOARDGAMES_PLAYERS_H

@@ -48,6 +48,10 @@ private:
                         players[i] = new NumbersXOPlayers<char>(name, Symbol[i], board_max_size);
                         break;
                     }
+                    case 6:{
+                        players[i] = new FourInARowPlayer(name, Symbol[i]);
+                        break;
+                    }
                     default:
                     {
                         players[i] = new HumanPlayer<char>(name, Symbol[i], board_max_size);
@@ -66,6 +70,10 @@ private:
                     case 5:
                     {
                         players[i] = new NumbersXORandomPlayers<char>(Symbol[i], board_max_size);
+                        break;
+                    }
+                    case 6:{
+                        players[i] = new FourInARowRandomPlayer(Symbol[i], board_max_size);
                         break;
                     }
                     default:
@@ -92,6 +100,7 @@ private:
         cout << "3. Pyramid TicTacToe\n";
         cout << "4. Word TicTacToe\n";
         cout << "5. NumbersOX\n";
+        cout << "6. Four in a row\n";
         cout << "7. SUS TicTacToe\n";
         cout << "8. Ultimate TicTacToe\n";
         cin >> boardType;
@@ -137,6 +146,12 @@ private:
             {
                 Board = new NumbersOX();
                 board_max_size = 3;
+                break;
+            }
+            case 6:
+            {
+                Board = new FourInARowBoard();
+                board_max_size = 7;
                 break;
             }
             case 7:
